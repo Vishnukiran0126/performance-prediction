@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Performance Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Nunito:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        h1 {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #f06, #ff7f50);
+            padding: 50px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* Form */
+        .form-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff7f50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #f06;
+        }
+
+        /* Result Section */
+        .result-container {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .result-card:hover {
+            transform: scale(1.05);
+        }
+
+        .result-card p {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Player Performance Prediction</h1>
+        <p>Enter a player's name to predict their next match performance!</p>
+    </div>
+
+    <div class="form-container">
+        <form action="/predict" method="post" id="predictForm">
+            <input type="text" id="player_name" name="player_name" placeholder="Player Name (e.g., Virat Kohli)" required>
+            <button type="submit">Predict</button>
+        </form>
+    </div>
+
+    <div class="result-container" id="resultContainer">
+        <div class="result-card">
+            <h3>Prediction Results</h3>
+            <p id="resultPlayerName"></p>
+            <p><strong>Predicted Runs:</strong> <span id="predictedRuns"></span></p>
+            <p><strong>Predicted Balls Faced:</strong> <span id="predictedBallsFaced"></span></p>
+        </div>
+    </div>
+
+
+
+    <script>
+        document.getElementById("predictForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let playerName = document.getElementById("player_name").value;
+            
+            fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ player_name: playerName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    document.getElementById("resultPlayerName").textContent = "Player: " + data.player_name;
+                    document.getElementById("predictedRuns").textContent = data.predicted_runs;
+                    document.getElementById("predictedBallsFaced").textContent = data.predicted_balls_faced;
+
+                    document.getElementById("resultContainer").style.display = "block";
+                }
+            })
+            .catch(error => alert("An error occurred: " + error));
+        });
+    </script>
+</body>
+</html>
